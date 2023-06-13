@@ -1,6 +1,6 @@
 export const metadata = {
-    title: 'Home',
-    description: 'Welcome to Next.js',
+    title: 'Recipe Randomizer',
+    description: 'Homepage',
   }
 
 export default function RootLayout({
