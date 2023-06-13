@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import NewRecipeButton from '../../client-components/new-recipe-button.js';
-import { revalidatePath } from 'next/cache.js';
 
 async function getData() {
     let res = await fetch('http://localhost:8888/.netlify/functions/randomRecipe', { cache: 'no-store' })
