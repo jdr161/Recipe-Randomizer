@@ -10,6 +10,9 @@ export default function Page() {
         <Link href="/recipe" prefetch={false}>
           <button>Get a randomized recipe</button>
         </Link>
+        <Link href="/add-recipe">
+          <button>Add a Recipe to the Database</button>
+        </Link>
       </main>
     </div>
   )
