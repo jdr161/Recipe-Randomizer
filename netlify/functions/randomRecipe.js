@@ -11,22 +11,22 @@ exports.handler = async function (event, context) {
         })
  
         await client.connect()
-        const recipe = await client.query('SELECT * FROM \"Recipes\" ORDER BY random() LIMIT 1')
+        const recipe = await client.query('SELECT * FROM recipes ORDER BY random() LIMIT 1')
         const formattedRecipe = recipe.rows[0]
-        const recipeID = recipe.rows[0].ID
+        const recipeID = recipe.rows[0].id
         
-        const ingredients = await client.query('SELECT \"I\".\"Name\", \"IiR\".\"IngredientAmount\", \"IiR\".\"MeasurementType\" FROM ' + 
-        '\"IngredientInRecipe\" AS \"IiR\" INNER JOIN \"Ingredients\" as \"I\" ' +
-            'ON (\"IiR\".\"IngredientID\" = \"I\".\"ID\") ' +
-        'WHERE \"IiR\".\"RecipeID\" = $1 ' + //REPLACE 1 with recipeID
-        'ORDER BY \"IiR\".\"IngredientNumber\" ASC', [recipeID])
+        const ingredients = await client.query('SELECT i.name, iir.ingredient_amount, iir.measurement_type FROM ' + 
+        'ingredient_in_recipe AS iir INNER JOIN ingredients as i ' +
+            'ON (iir.ingredient_id = i.id) ' +
+        'WHERE iir.recipe_id = $1 ' +
+        'ORDER BY iir.ingredient_number ASC', [recipeID])
         const formattedIngredients = ingredients.rows
 
-        const steps = await client.query('SELECT \"Steps\".\"Text\", \"Steps\".\"StepNumber\" ' +
-            'FROM \"Steps\" ' +
-            'WHERE \"Steps\".\"RecipeID\" = $1 ' +
-            'ORDER BY \"Steps\".\"StepNumber\" ASC', [recipeID])
-        formattedSteps = steps.rows
+        const steps = await client.query('SELECT steps.text, steps.step_number ' +
+            'FROM steps ' +
+            'WHERE steps.recipe_id = $1 ' +
+            'ORDER BY steps.step_number ASC', [recipeID])
+        const formattedSteps = steps.rows
 
         await client.end()
         return {

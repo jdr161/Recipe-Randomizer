@@ -8,8 +8,9 @@ async function getData() {
    
     // Recommendation: handle errors
     if (!res.ok) {
+        console.log(res.body)
       // This will activate the closest `error.js` Error Boundary
-      throw new Error('Failed to fetch data')
+      //throw new Error('Failed to fetch data')
     }
    
     return res.json()
@@ -25,10 +26,10 @@ export default async function Page() {
       <div className="container">
         <main>
             <h1>
-                Randomized Recipe: #{recipe.ID} {recipe.Name} 
+                Randomized Recipe: #{recipe.id} {recipe.name} 
             </h1>
             <h3>
-                Meal Type: {recipe.MealType} 
+                Meal Type: {recipe.meal_type} 
             </h3>
             <h4>
                 Ingredients:
@@ -36,7 +37,7 @@ export default async function Page() {
             <ul>
                 {ingredients.map(ingredient => {
                     return (
-                        <li>{ingredient.IngredientAmount} {ingredient.MeasurementType} {ingredient.Name}</li>
+                        <li>{ingredient.ingredient_amount} {ingredient.measurement_type} {ingredient.name}</li>
                     )
                 })}
             </ul>
@@ -46,7 +47,7 @@ export default async function Page() {
             <ul>
                 {steps.map(step => {
                     return (
-                        <li>{step.StepNumber} {step.Text}</li>
+                        <li>{step.step_number} {step.text}</li>
                     )
                 })}
             </ul>
