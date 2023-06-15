@@ -1,19 +1,21 @@
 import Link from 'next/link'
 import NewRecipeButton from '../../client-components/new-recipe-button.js';
+const axios = require('axios')
 
 async function getData() {
-    let res = await fetch('http://localhost:8888/.netlify/functions/randomRecipe', { cache: 'no-store' })
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
-   
-    // Recommendation: handle errors
-    if (!res.ok) {
-        console.log(res.body)
-      // This will activate the closest `error.js` Error Boundary
-      //throw new Error('Failed to fetch data')
-    }
-   
-    return res.json()
+    axios.get('https://radiant-basbousa-209352.netlify.app/.netlify/functions/randomRecipe')
+    .then(function (response) {
+        // handle success
+        console.log(response);
+        return response.json()
+    })
+    .catch(function (error) {
+        // handle error
+        console.log(error);
+    })
+    .finally(function () {
+        // always executed
+    });
   }
    
 export default async function Page() {
