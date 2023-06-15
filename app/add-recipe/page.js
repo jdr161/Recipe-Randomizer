@@ -67,7 +67,7 @@ export default function Page() {
         // Prevent the browser from reloading the page
         e.preventDefault();
 
-        axios.post('http://localhost:8888/.netlify/functions/addRecipe', {
+        axios.post('https://radiant-basbousa-209352.netlify.app/.netlify/functions/addRecipe', {
             recipeName: recipeName,
             mealType: mealType,
             ingredients: JSON.stringify(ingredientFields),
