@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react';
+const axios = require('axios')
 
 export default function Page() {
     //VARIABLES
@@ -66,17 +67,18 @@ export default function Page() {
         // Prevent the browser from reloading the page
         e.preventDefault();
 
-        // Get data and add it to data type that can be sent through POST
-        const formData = new FormData()
-        formData.append("recipeName", recipeName)
-        formData.append("mealType", mealType)
-        formData.append("ingredients", JSON.stringify(ingredientFields))
-        formData.append("steps", JSON.stringify(stepFields))
-
-        // Send the POST to our API
-        let res = await fetch('http://localhost:8888/.netlify/functions/addRecipe', 
-            {cache: 'no-store', method: 'POST', body: formData }); //don't want to store POST responses in cache
-        console.log(res.json())
+        axios.post('http://localhost:8888/.netlify/functions/addRecipe', {
+            recipeName: recipeName,
+            mealType: mealType,
+            ingredients: JSON.stringify(ingredientFields),
+            steps: JSON.stringify(stepFields)
+          })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
     }
 
     return (
