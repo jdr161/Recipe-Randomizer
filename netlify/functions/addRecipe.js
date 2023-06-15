@@ -1,6 +1,12 @@
 const { Client } = require("pg")
 const format = require('pg-format');
 
+const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+  };
+  
 exports.handler = async function (event, context) {
     try {
         const client = new Client({
@@ -80,6 +86,7 @@ exports.handler = async function (event, context) {
 
         return {
             statusCode: 200,
+            headers,
             body: JSON.stringify({message: "Recipe added Successfully!"})
           }
     } catch (error) {
