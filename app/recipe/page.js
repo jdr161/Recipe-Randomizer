@@ -19,7 +19,7 @@ var steps = [{
 
 
 async function getData() {
-    axios.get('https://648b7e78cb383a00087c6911--radiant-basbousa-209352.netlify.app/recipe/.netlify/functions/randomRecipe')
+    axios.get('https://radiant-basbousa-209352.netlify.app/.netlify/functions/randomRecipe')
     .then(function (response) {
         // handle success
         console.log(response);
