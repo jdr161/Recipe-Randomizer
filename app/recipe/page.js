@@ -2,12 +2,32 @@ import Link from 'next/link'
 import NewRecipeButton from '../../client-components/new-recipe-button.js';
 const axios = require('axios')
 
+var recipe = {
+    id: 'loading',
+    name: 'loading',
+    meal_type: 'loading',
+}
+var ingredients = [{
+    name: 'loading',
+    ingredient_amount: 'loading',
+    measurement_type: 'loading'
+}]
+var steps = [{
+    text: 'loading',
+    step_number: 'loading',
+}]
+
+
 async function getData() {
     axios.get('https://radiant-basbousa-209352.netlify.app/.netlify/functions/randomRecipe')
     .then(function (response) {
         // handle success
         console.log(response);
-        return response.json()
+        let data = response.json()
+        recipe = JSON.parse(data.recipe)
+        ingredients = JSON.parse(data.ingredients)
+        steps = JSON.parse(data.steps)
+        return 
     })
     .catch(function (error) {
         // handle error
@@ -19,10 +39,7 @@ async function getData() {
   }
    
 export default async function Page() {
-    let data = await getData()
-    let recipe = JSON.parse(data.recipe)
-    let ingredients = JSON.parse(data.ingredients)
-    let steps = JSON.parse(data.steps)
+    getData()
    
     return (
       <div className="container">
