@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 const axios = require('axios')
 
 export default function Page() {
@@ -63,26 +64,40 @@ export default function Page() {
         setStepFields(data)
     }
 
-    async function handleSubmit(e) {
-        // Prevent the browser from reloading the page
-        e.preventDefault();
-
-        axios.post('https://radiant-basbousa-209352.netlify.app/.netlify/functions/addRecipe', {
+    //SUBMISSION RELATED FUNCTIONS
+    async function doPost() {
+        //return await axios.post('https://radiant-basbousa-209352.netlify.app/.netlify/functions/addRecipe', {
+        return await axios.post('http://localhost:8888/.netlify/functions/addRecipe', {
             recipeName: recipeName,
             mealType: mealType,
             ingredients: JSON.stringify(ingredientFields),
             steps: JSON.stringify(stepFields)
-          })
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+            })
+            .then(function (response) {
+                
+            })
+
+    }
+
+    async function handleSubmit(e) {
+        // Prevent the browser from reloading the page
+        e.preventDefault();
+
+        const promise = doPost()
+
+        toast.promise(promise, {
+            loading: 'Loading...',
+            success: 'Recipe added successfully',
+            error: (e) => {
+                console.log(e)
+                return e.response.data.message
+            },
+        })
     }
 
     return (
         <div className="container">
+            <Toaster />
             <form method="post" onSubmit={handleSubmit}>
                 <h1>Recipe Information:</h1>
                 <label>

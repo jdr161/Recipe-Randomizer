@@ -6,7 +6,7 @@ const headers = {
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
   };
-  
+
 exports.handler = async function (event, context) {
     try {
         const client = new Client({
@@ -93,7 +93,10 @@ exports.handler = async function (event, context) {
         console.log(error)
         return {
             statusCode: 500,
-            body: JSON.stringify({error}),
+            body: JSON.stringify({
+                error: error,
+                message: error.message
+            })
         };
     }
 };
