@@ -42,6 +42,7 @@ export default async function Page() {
    
     return (
         <>
+        <p></p>
         <h1>
             Randomized Recipe: #{recipe.id} {recipe.name} 
         </h1>
