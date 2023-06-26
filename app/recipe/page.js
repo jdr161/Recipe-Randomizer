@@ -42,18 +42,21 @@ export default async function Page() {
    
     return (
         <>
-        <p></p>
-        <h1>
-            Randomized Recipe: #{recipe.id} {recipe.name} 
-        </h1>
-        <h3>
-            Meal Type: {recipe.meal_type} 
-        </h3>
+        <div className='container mx-auto'>
+            <div className='columns-2'>
+                <p className='text-5xl'>#{recipe.id}: {recipe.name}</p>
+                <div className='justify-end'>
+                    <NewRecipeButton />
+                </div>
+            </div>
+            <div className='columns-2'>
+                <p className='text-2xl'>{recipe.meal_type} </p>
+            </div>
+        </div>
         <RecipeDisplay 
             ingredients={ingredients}
             steps={steps}
             />
-        <NewRecipeButton />
         </>
     )
   }
