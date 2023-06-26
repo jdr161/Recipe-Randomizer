@@ -6,9 +6,8 @@ const axios = require('axios')
 
 export default function Page() {
     //VARIABLES
-    const router = useRouter()
     const [recipeName, setRecipeName] = useState("")
-    const [mealType, setMealType] = useState("")
+    const [mealType, setMealType] = useState("Pick One")
     const [ingredientFields, setIngredientFields] = useState([
         { name: '', amount: '', measurementType: ''},
     ])
@@ -32,6 +31,14 @@ export default function Page() {
         let data = [...stepFields];
         data[index][event.target.name] = event.target.value;
         setStepFields(data);
+    }
+
+    //RESET FUNCTION
+    const resetForm = () => {
+        setRecipeName("")
+        setMealType("Pick One")
+        setIngredientFields([{ name: '', amount: '', measurementType: ''}])
+        setStepFields([{ text: '' }])
     }
     
     //ADD INPUT BOX HANDLERS
@@ -84,10 +91,12 @@ export default function Page() {
         e.preventDefault();
 
         const promise = doPost()
-
         toast.promise(promise, {
             loading: 'Loading...',
-            success: 'Recipe added successfully',
+            success: () => {
+                resetForm()
+                return 'Recipe added successfully'
+            },
             error: (e) => {
                 console.log(e)
                 return e.response.data.message
@@ -96,92 +105,153 @@ export default function Page() {
     }
 
     return (
-        <div className="container">
+        <div className="container mx-auto">
             <Toaster />
+            <p className='text-5xl text-center'>Add a New Recipe:</p>
+            <div className='grid grid-cols-1'>
+                <p className='text-2xl col-span-4'>Recipe Information:</p>
+            </div>
             <form method="post" onSubmit={handleSubmit}>
-                <h1>Recipe Information:</h1>
-                <label>
-                    Recipe Name-
-                    <input
-                    name='rname'
-                    placeholder='Recipe Name...'
-                    onChange={event => handleRecipeNameChange(event)}
-                    value={recipeName}
-                    />
-                </label>
-                <label>
-                    Meal Type-
-                    <input
-                    name='mealType'
-                    placeholder='Meal Type...'
-                    onChange={event => handleMealTypeChange(event)}
-                    value={mealType}
-                    />
-                </label>
-                <hr />
-                <h1>
-                    Ingredients:
-                </h1>
-            {ingredientFields.map((ingredient, index) => {
+                <div className="grid grid-cols-4 gap-4">
+                    {/* RECIPE NAME */}
+                    <div className="form-control w-full col-span-3">
+                        <label className="label">
+                            <span className="label-text">Recipe Name</span>
+                        </label>
+                        <input 
+                        name='rname'
+                        onChange={event => handleRecipeNameChange(event)}
+                        value={recipeName}
+                        type="text" 
+                        placeholder="Type here" 
+                        className="input input-bordered w-full" 
+                        />
+                        <label className="label">
+                            <span className="label-text-alt" hidden>error text</span>
+                        </label>
+                    </div>
+                    {/* MEAL TYPE */}
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label">
+                            <span className="label-text">Select meal type</span>
+                        </label>
+                        <select 
+                        className="select select-bordered"
+                        name='mealType'
+                        placeholder='Meal Type...'
+                        onChange={event => handleMealTypeChange(event)}
+                        value={mealType}
+                        >
+                            <option disabled>Pick one</option>
+                            <option>Breakfast</option>
+                            <option>Lunch</option>
+                            <option>Dinner</option>
+                            <option>Desert</option>
+                        </select>
+                        <label className="label">
+                            <span className="label-text-alt" hidden>error text</span>
+                        </label>
+                    </div>
+                    <hr className='col-span-4'/>
+                </div>
+                <div className='grid grid-cols-1'>
+                    <p className='text-2xl col-span-4'>Ingredients:</p>
+                </div>
+                {ingredientFields.map((ingredient, index) => {
                 return (
-                <div key={"ingredient-" + index}>
-                    <label>
-                        Name-
-                        <input
+                <div key={"ingredient-" + index} className='grid grid-cols-5 gap-4 items-center'>
+                    {/* INGREDIENT NAME */}
+                    <div className="form-control w-full col-span-2">
+                        <label className="label">
+                            <span className="label-text">Ingredient Name</span>
+                        </label>
+                        <input 
                         name='name'
                         placeholder='Name'
                         onChange={event => handleIngredientFieldChange(event, index)}
                         value={ingredient.name}
+                        type="text" 
+                        className="input input-bordered w-full" 
                         />
-                    </label>
-                    <label>
-                        Amount-
-                        <input
+                        <label className="label">
+                            <span className="label-text-alt" hidden>error text</span>
+                        </label>
+                    </div>
+                    {/* INGREDIENT AMOUNT */}
+                    <div className="form-control w-full col-span-1">
+                        <label className="label">
+                            <span className="label-text">Amount</span>
+                        </label>
+                        <input 
                         name='amount'
                         placeholder='Amount'
                         onChange={event => handleIngredientFieldChange(event, index)}
                         value={ingredient.amount}
+                        type="text" 
+                        className="input input-bordered w-full" 
                         />
-                    </label>
-                    <label>
-                        Measurement Type-
-                        <input
+                        <label className="label">
+                            <span className="label-text-alt" hidden>error text</span>
+                        </label>
+                    </div>
+                    {/* INGREDIENT MEASUREMENT TYPE */}
+                    <div className="form-control w-full col-span-1">
+                        <label className="label">
+                            <span className="label-text">Measurement Type</span>
+                        </label>
+                        <input 
                         name='measurementType'
                         placeholder='Measurement Type'
                         onChange={event => handleIngredientFieldChange(event, index)}
                         value={ingredient.measurementType}
+                        type="text" 
+                        className="input input-bordered w-full" 
                         />
-                    </label>
-                    <button type="button" onClick={() => removeIngredientFields(index)}>Remove</button>
+                        <label className="label">
+                            <span className="label-text-alt" hidden>error text</span>
+                        </label>
+                    </div>
+                    <div className='col-span-1'>
+                        <button className='btn btn-sm' type="button" onClick={() => removeIngredientFields(index)}>Remove</button>
+                    </div>
                 </div>
                 )
             })}
-            <button type="button" onClick={addIngredientFields}>Add More Ingredients..</button>
+            <button className='btn btn-md' type="button" onClick={addIngredientFields}>Add More Ingredients..</button>
             <hr />
-            <h1>
-                Steps:
-            </h1>
+            <div className='grid grid-cols-1'>
+                <p className='text-2xl col-span-4'>Steps:</p>
+            </div>
             {stepFields.map((step, index) => {
                 return (
-                <div key={"step-" + index}>
-                    <label>
-                        Text-
-                        <input
+                <div key={"step-" + index} className='grid grid-cols-5 gap-3 items-center'>
+                    <div className="form-control w-full col-span-2">
+                        <label className="label">
+                            <span className="label-text">Step Text</span>
+                        </label>
+                        <input 
                         name='text'
                         placeholder='Step Text'
                         onChange={event => handleStepFieldChange(event, index)}
                         value={step.text}
+                        type="text" 
+                        className="input input-bordered w-full" 
                         />
-                    </label>
-                    <button type="button" onClick={() => removeStepFields(index)}>Remove</button>
+                        <label className="label">
+                            <span className="label-text-alt" hidden>error text</span>
+                        </label>
+                    </div>
+                    <div className='col-span-1'>
+                        <button className='btn btn-sm' type="button" onClick={() => removeStepFields(index)}>Remove</button>
+                    </div>
                 </div>
                 )
             })}
-            <button type="button" onClick={addStepFields}>Add More Steps..</button>
+            <button className='btn btn-md' type="button" onClick={addStepFields}>Add More Steps..</button>
             </form>
             <br />
-            <button type='submit' onClick={handleSubmit}>Submit</button>
-            <button onClick={() => router.push("../")}>return to homepage</button>
+            <button className='btn btn-success' type='submit' onClick={handleSubmit}>Submit</button>
+            <button className='btn btn-info' type='button' onClick={resetForm}>reset</button>
         </div>
     );
 }
