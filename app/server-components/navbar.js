@@ -7,9 +7,9 @@ export default function NavBar(){
             <Link href='/' className='navbar-start'>
                 <div className="btn btn-ghost normal-case text-xl">Home</div>
             </Link>
-            <div className='navbar-center'>
+            <Link href='/recipe' className='navbar-center'>
                 <div className='text-xl font-bold'>Recipe Randomizer</div>
-            </div>
+            </Link>
             <div className='navbar-end'>
                 <Link href="/add-recipe">
                     <div className='btn btn-secondary'>Add a Recipe</div>
