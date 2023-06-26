@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import NewRecipeButton from '../../client-components/new-recipe-button.js';
+import NewRecipeButton from '../client-components/new-recipe-button.js';
+import RecipeDisplay from '../client-components/recipe-display.js';
 const axios = require('axios')
 
 var recipe = {
@@ -19,11 +19,10 @@ var steps = [{
 
 
 async function getData() {
-    axios.get('https://radiant-basbousa-209352.netlify.app/.netlify/functions/randomRecipe')
+    axios.get('http://localhost:8888/.netlify/functions/randomRecipe')
     .then(function (response) {
         // handle success
-        console.log(response);
-        let data = response.json()
+        let data = response.data
         recipe = JSON.parse(data.recipe)
         ingredients = JSON.parse(data.ingredients)
         steps = JSON.parse(data.steps)
@@ -42,39 +41,18 @@ export default async function Page() {
     getData()
    
     return (
-      <div className="container">
-        <main>
-            <h1>
-                Randomized Recipe: #{recipe.id} {recipe.name} 
-            </h1>
-            <h3>
-                Meal Type: {recipe.meal_type} 
-            </h3>
-            <h4>
-                Ingredients:
-            </h4>
-            <ul>
-                {ingredients.map(ingredient => {
-                    return (
-                        <li>{ingredient.ingredient_amount} {ingredient.measurement_type} {ingredient.name}</li>
-                    )
-                })}
-            </ul>
-            <h4>
-                Steps:
-            </h4>
-            <ul>
-                {steps.map(step => {
-                    return (
-                        <li>{step.step_number} {step.text}</li>
-                    )
-                })}
-            </ul>
-            <Link href="../">
-                <button>return to homepage</button>
-            </Link>
-            <NewRecipeButton />
-        </main>
-      </div>
+        <>
+        <h1>
+            Randomized Recipe: #{recipe.id} {recipe.name} 
+        </h1>
+        <h3>
+            Meal Type: {recipe.meal_type} 
+        </h3>
+        <RecipeDisplay 
+            ingredients={ingredients}
+            steps={steps}
+            />
+        <NewRecipeButton />
+        </>
     )
   }
