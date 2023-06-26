@@ -8,7 +8,7 @@ export default function NavBar(){
                 <div className="btn btn-ghost normal-case text-xl">Home</div>
             </Link>
             <div className='navbar-center'>
-                <div className=''>Recipe Randomizer</div>
+                <div className='text-xl font-bold'>Recipe Randomizer</div>
             </div>
             <div className='navbar-end'>
                 <Link href="/add-recipe">
