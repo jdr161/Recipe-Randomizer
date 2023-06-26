@@ -12,7 +12,7 @@ export default function RecipeDisplay({ingredients, steps}){
                     </div>
                     <div className="collapse-content"> 
                     <div className="overflow-x-auto">
-                        <ul className="list-disc list-inside">
+                        <ul className="list-disc list-outside">
                             {ingredients.map((ingredient, index) => {
                                 return (
                                     <li>
@@ -31,7 +31,7 @@ export default function RecipeDisplay({ingredients, steps}){
                     </div>
                     <div className="collapse-content">
                         <div className="overflow-x-auto max-w-fit">
-                            <ol className="list-decimal list-inside">
+                            <ol className="list-decimal list-outside">
                                 {steps.map((step, index) => {
                                     return (
                                         <li key={"step-"+index+1}>{step.text}</li>
