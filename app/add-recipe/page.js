@@ -1,19 +1,27 @@
 'use client'
-import { useRouter } from 'next/navigation'
+
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 const axios = require('axios')
 
 export default function Page() {
     //VARIABLES
-    const [recipeName, setRecipeName] = useState("")
-    const [mealType, setMealType] = useState("Pick One")
+    const [recipeName, setRecipeName] = useState({value: '', inputState: ''})
+    const [mealType, setMealType] = useState({value: 'Breakfast', inputState: ''})
     const [ingredientFields, setIngredientFields] = useState([
-        { name: '', amount: '', measurementType: ''},
+        { name: '', 
+        nameInputState: '', 
+        amount: '', 
+        amountInputState: '',
+        amountErrorText: 'not set', 
+        measurementType: '', 
+        measurementTypeInputState: ''},
     ])
-    const [stepFields, setStepFields] = useState([
-        { text: '' },
+    const [stepFields, setStepFields] = useState([{ 
+        text: '', 
+        textInputState: '' },
     ])
+    const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Desert']
 
     //INPUT VALUE CHANGE HANDLERS
     const handleRecipeNameChange = (event) => {
@@ -35,25 +43,30 @@ export default function Page() {
 
     //RESET FUNCTION
     const resetForm = () => {
-        setRecipeName("")
-        setMealType("Pick One")
-        setIngredientFields([{ name: '', amount: '', measurementType: ''}])
-        setStepFields([{ text: '' }])
+        setRecipeName({value: '', inputState: ''})
+        setMealType({value: 'Breakfast', inputState: ''})
+        setIngredientFields([{ name: '', nameInputState: '', amount: '', amountInputState: '', amountErrorText: 'not set', measurementType: '', measurementTypeInputState: ''}])
+        setStepFields([{ text: '', textInputState: '' }])
     }
     
     //ADD INPUT BOX HANDLERS
     const addIngredientFields = () => {
         let object = { 
             name: '', 
+            nameInputState: '',
             amount: '', 
-            measurementType: ''
+            amountInputState: '',
+            amountErrorText: 'not set',
+            measurementType: '',
+            measurementTypeInputState: '',
         }
 
         setIngredientFields([...ingredientFields, object])
     }
     const addStepFields = () => {
         let object = {
-            text: ''
+            text: '',
+            textInputState: '',
         }
 
         setStepFields([...stepFields, object])
@@ -61,20 +74,105 @@ export default function Page() {
 
     //REMOVE INPUT BOX HANDLERS
     const removeIngredientFields = (index) => {
-        let data = [...ingredientFields];
-        data.splice(index, 1)
-        setIngredientFields(data)
+        if(ingredientFields.length > 1){
+            let data = [...ingredientFields];
+            data.splice(index, 1)
+            setIngredientFields(data)
+        }
+        else {
+            toast.error("Must have at least one ingredient")
+        }
     }
     const removeStepFields = (index) => {
-        let data = [...stepFields];
-        data.splice(index, 1)
-        setStepFields(data)
+        if(stepFields.length > 1){
+            let data = [...stepFields];
+            data.splice(index, 1)
+            setStepFields(data)
+        }
+        else {
+            toast.error("Must have at least one step")
+        }
+    }
+    //SUBMISSION RELATED FUNCTIONS
+    function validateIngredient(ingredient, index){
+        let bool = true
+        if(ingredient.name==''){
+            bool=false
+            ingredient.nameInputState='input-error'
+        } else {
+            ingredient.nameInputState=''
+        }
+        if(ingredient.amount==''){
+            bool=false
+            ingredient.amountErrorText='Required'
+            ingredient.amountInputState='input-error'
+        } else if(isNaN(Number(ingredient.amount))){
+            bool=false
+            ingredient.amountErrorText='Amount must be a number'
+            ingredient.amountInputState='input-error'
+        } else{
+            ingredient.amountInputState=''
+        }
+        if(ingredient.measurementType==''){
+            bool=false
+            ingredient.measurementTypeInputState='input-error'
+        } else{
+            ingredient.measurementTypeInputState=''
+        }
+        return true
     }
 
-    //SUBMISSION RELATED FUNCTIONS
+    async function validateStep(step, index){
+        let bool = true
+        if(step.text==''){
+            bool=false
+            step.textInputState='input-error'
+        } else{
+            step.textInputState=''
+        }
+        return bool
+    }
+
+    function validateData() {
+        //Clone all the data because setState() is not immediate 
+        let data = {
+            recipeName: structuredClone(recipeName),
+            mealType: structuredClone(mealType),
+            ingredientFields: structuredClone(ingredientFields),
+            stepFields: structuredClone(stepFields)
+        }
+        let bool = true
+        if(data.recipeName.value == ''){
+            bool = false
+            data.recipeName={value: data.recipeName.value, inputState: 'input-error'}
+        } else{
+            data.recipeName={value: data.recipeName.value, inputState: ''}
+        }
+        if(!mealTypes.includes(data.mealType.value)){
+            bool = false
+            data.mealType={value: data.mealType.value, inputState: 'select-error'}
+        } else{
+            data.mealType={value: data.mealType.value, inputState: ''}
+        }
+        data.ingredientFields.map((ingredient, index) => {
+            if(!validateIngredient(ingredient, index)){
+                bool = false
+            }
+        })
+        data.stepFields.map((step, index) => {
+            if(!validateStep(step, index)){
+                bool = false
+            }
+        })
+        setRecipeName(data.recipeName)
+        setMealType(data.mealType)
+        setIngredientFields(data.ingredientFields)
+        setStepFields(data.stepFields)
+        return bool
+    }
+
     async function doPost() {
-        //return await axios.post('https://radiant-basbousa-209352.netlify.app/.netlify/functions/addRecipe', {
-        return await axios.post('http://localhost:8888/.netlify/functions/addRecipe', {
+        return await axios.post(process.env.API_ENDPOINT + '/.netlify/functions/addRecipe', {
             recipeName: recipeName,
             mealType: mealType,
             ingredients: JSON.stringify(ingredientFields),
@@ -90,18 +188,20 @@ export default function Page() {
         // Prevent the browser from reloading the page
         e.preventDefault();
 
-        const promise = doPost()
-        toast.promise(promise, {
-            loading: 'Loading...',
-            success: () => {
-                resetForm()
-                return 'Recipe added successfully'
-            },
-            error: (e) => {
-                console.log(e)
-                return e.response.data.message
-            },
-        })
+        if(validateData()){
+            const promise = doPost()
+            toast.promise(promise, {
+                loading: 'Loading...',
+                success: () => {
+                    resetForm()
+                    return 'Recipe added successfully'
+                },
+                error: (e) => {
+                    console.log(e)
+                    return e.response.data.message
+                },
+            })
+        }
     }
 
     return (
@@ -121,13 +221,15 @@ export default function Page() {
                         <input 
                         name='rname'
                         onChange={event => handleRecipeNameChange(event)}
-                        value={recipeName}
+                        value={recipeName.value}
                         type="text" 
                         placeholder="Type here" 
-                        className="input input-bordered w-full" 
+                        className={`input input-bordered ${recipeName.inputState} w-full`}
                         />
                         <label className="label">
-                            <span className="label-text-alt" hidden>error text</span>
+                            {recipeName.inputState=="input-error" && <span className="label-text-alt">
+                                    <p className='text-red-500'>Required</p>
+                                </span>}
                         </label>
                     </div>
                     {/* MEAL TYPE */}
@@ -136,20 +238,27 @@ export default function Page() {
                             <span className="label-text">Select meal type</span>
                         </label>
                         <select 
-                        className="select select-bordered"
+                        className={`select select-bordered ${mealType.inputState}`}
                         name='mealType'
                         placeholder='Meal Type...'
                         onChange={event => handleMealTypeChange(event)}
-                        value={mealType}
+                        value={mealType.value}
                         >
                             <option disabled>Pick one</option>
                             <option>Breakfast</option>
                             <option>Lunch</option>
                             <option>Dinner</option>
                             <option>Desert</option>
+                            {/* {mealTypes.map((meal) => {
+                                return (
+                                <option>{meal}</option>
+                                )
+                            })} */}
                         </select>
                         <label className="label">
-                            <span className="label-text-alt" hidden>error text</span>
+                            {mealType.inputState=="select-error" && <span className="label-text-alt">
+                                <p className='text-red-500'>Required</p>
+                            </span>}
                         </label>
                     </div>
                     <hr className='col-span-4'/>
@@ -171,10 +280,12 @@ export default function Page() {
                         onChange={event => handleIngredientFieldChange(event, index)}
                         value={ingredient.name}
                         type="text" 
-                        className="input input-bordered w-full" 
+                        className={`input input-bordered ${ingredient.nameInputState} w-full`}
                         />
                         <label className="label">
-                            <span className="label-text-alt" hidden>error text</span>
+                            {ingredient.nameInputState=="input-error" && <span className="label-text-alt">
+                                <p className='text-red-500'>Required</p>
+                            </span>}
                         </label>
                     </div>
                     {/* INGREDIENT AMOUNT */}
@@ -188,10 +299,12 @@ export default function Page() {
                         onChange={event => handleIngredientFieldChange(event, index)}
                         value={ingredient.amount}
                         type="text" 
-                        className="input input-bordered w-full" 
+                        className={`input input-bordered ${ingredient.amountInputState} w-full`} 
                         />
                         <label className="label">
-                            <span className="label-text-alt" hidden>error text</span>
+                            {ingredient.amountInputState=="input-error" && <span className="label-text-alt">
+                                    <p className='text-red-500'>{ingredient.amountErrorText}</p>
+                                </span>}
                         </label>
                     </div>
                     {/* INGREDIENT MEASUREMENT TYPE */}
@@ -205,10 +318,12 @@ export default function Page() {
                         onChange={event => handleIngredientFieldChange(event, index)}
                         value={ingredient.measurementType}
                         type="text" 
-                        className="input input-bordered w-full" 
+                        className={`input input-bordered ${ingredient.measurementTypeInputState} w-full`}
                         />
                         <label className="label">
-                            <span className="label-text-alt" hidden>error text</span>
+                            {ingredient.measurementTypeInputState=="input-error" && <span className="label-text-alt">
+                                <p className='text-red-500'>Required</p>
+                            </span>}
                         </label>
                     </div>
                     <div className='col-span-1'>
@@ -235,10 +350,12 @@ export default function Page() {
                         onChange={event => handleStepFieldChange(event, index)}
                         value={step.text}
                         type="text" 
-                        className="input input-bordered w-full" 
+                        className={`input input-bordered ${step.textInputState} w-full`}
                         />
                         <label className="label">
-                            <span className="label-text-alt" hidden>error text</span>
+                            {step.textInputState=="input-error" && <span className="label-text-alt" >
+                            <p className='text-red-500'>Required</p>
+                            </span>}
                         </label>
                     </div>
                     <div className='col-span-1'>
