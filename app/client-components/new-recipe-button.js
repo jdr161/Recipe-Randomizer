@@ -6,7 +6,7 @@ export default function NewRecipeButton(){
 
     return (
         <div>
-            <button onClick={() => router.refresh()}>Get New Recipe</button>
+            <button className='btn btn-neutral' onClick={() => router.refresh()}>Get New Recipe</button>
         </div>
     )
 }
