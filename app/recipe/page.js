@@ -19,7 +19,7 @@ var steps = [{
 
 
 async function getData() {
-    axios.get('http://localhost:8888/.netlify/functions/randomRecipe')
+    axios.get(process.env.API_ENDPOINT + '/.netlify/functions/randomRecipe')
     .then(function (response) {
         // handle success
         let data = response.data
