@@ -1,6 +1,8 @@
 const { Client } = require("pg")
 const headers = {
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+    'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization'
   };
 
 exports.handler = async function (event, context) {
