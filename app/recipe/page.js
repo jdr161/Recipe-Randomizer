@@ -17,6 +17,20 @@ var steps = [{
     step_number: 'loading',
 }]
 
+const fetchData = async () => {
+    let url = '';
+    if(process.env.NODE_ENV=='development'){
+        url = 'http://localhost:8888/.netlify/functions/randomRecipe';
+    } else {
+        url = 'https://radiant-basbousa-209352.netlify.app/.netlify/functions/randomRecipe';
+    }
+    const res  = await fetch(url, {cache: 'no-store'});
+
+    if(!res.ok){
+        throw new Error('could not fetch data');
+    }
+    return res.json();
+};
 
 async function getData() {
     let url = ''
@@ -44,7 +58,11 @@ async function getData() {
   }
    
 export default async function Page() {
-    getData()
+    //getData()
+    const data = await fetchData();
+    const recipe = JSON.parse(data.recipe);
+    const ingredients = JSON.parse(data.ingredients);
+    const steps = JSON.parse(data.steps)
    
     return (
         <>
