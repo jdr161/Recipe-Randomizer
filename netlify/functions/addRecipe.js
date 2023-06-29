@@ -1,13 +1,19 @@
 const { Client } = require("pg")
 const format = require('pg-format');
 
-const headers = {
+const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-    'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization'
-  };
+    'Access-Control-Allow-Headers':
+      'Origin, X-Requested-With, Content-Type, Accept',
+};
 
 exports.handler = async function (event, context) {
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+          statusCode: 200,
+          headers: CORS_HEADERS,
+        }
+    }
     try {
         const client = new Client({
             user: process.env.PGUSER,
@@ -86,14 +92,18 @@ exports.handler = async function (event, context) {
 
         return {
             statusCode: 200,
-            headers: headers,
+            headers: {
+                ...CORS_HEADERS
+            },
             body: JSON.stringify({message: "Recipe added Successfully!"})
           }
     } catch (error) {
         console.log(error)
         return {
             statusCode: 500,
-            headers, headers,
+            headers: {
+                ...CORS_HEADERS
+            },
             body: JSON.stringify({
                 error: error,
                 message: error.message

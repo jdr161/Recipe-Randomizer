@@ -1,11 +1,17 @@
 const { Client } = require("pg")
-const headers = {
+const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-    'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization'
-  };
+    'Access-Control-Allow-Headers':
+      'Origin, X-Requested-With, Content-Type, Accept',
+};
 
 exports.handler = async function (event, context) {
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+          statusCode: 200,
+          headers: CORS_HEADERS,
+        }
+    }
     try {
         const client = new Client({
             user: process.env.PGUSER,
@@ -36,7 +42,9 @@ exports.handler = async function (event, context) {
         await client.end()
         return {
             statusCode: 200,
-            headers,
+            headers: {
+                ...CORS_HEADERS
+            },
             body: JSON.stringify({
                 recipe: JSON.stringify(formattedRecipe),
                 ingredients: JSON.stringify(formattedIngredients),
@@ -47,6 +55,9 @@ exports.handler = async function (event, context) {
         console.log(error)
         return {
             statusCode: 500,
+            headers: {
+                ...CORS_HEADERS
+            },
             body: JSON.stringify({error}),
           };
     }
