@@ -19,7 +19,13 @@ var steps = [{
 
 
 async function getData() {
-    axios.get(process.env.API_ENDPOINT + '/.netlify/functions/randomRecipe')
+    let url = ''
+    if(process.env.NODE_ENV=='development'){
+        url = 'http://localhost:8888/.netlify/functions/randomRecipe'
+    } else {
+        url = 'https://radiant-basbousa-209352.netlify.app/.netlify/functions/randomRecipe'
+    }
+    axios.get(url)
     .then(function (response) {
         // handle success
         let data = response.data
