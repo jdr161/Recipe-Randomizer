@@ -25,10 +25,10 @@ export default function Page() {
 
     //INPUT VALUE CHANGE HANDLERS
     const handleRecipeNameChange = (event) => {
-        setRecipeName(event.target.value);
+        setRecipeName({value: event.target.value, inputState: recipeName.inputState});
     }
     const handleMealTypeChange = (event) => {
-        setMealType(event.target.value);
+        setMealType({value: event.target.value, inputState: mealType.inputState});
     }
     const handleIngredientFieldChange = (event, index) => {
         let data = [...ingredientFields];
@@ -172,11 +172,19 @@ export default function Page() {
     }
 
     async function doPost() {
-        return await axios.post(process.env.API_ENDPOINT + '/.netlify/functions/addRecipe', {
-            recipeName: recipeName,
-            mealType: mealType,
-            ingredients: JSON.stringify(ingredientFields),
-            steps: JSON.stringify(stepFields)
+        let url = ''
+        if(process.env.NODE_ENV=='development'){
+            url = 'http://localhost:8888/.netlify/functions/addRecipe'
+        } else {
+            url = 'https://radiant-basbousa-209352.netlify.app/.netlify/functions/addRecipe'
+        }
+        let ingredientsData = ingredientFields.map(({name, amount, measurementType}) => ({name, amount, measurementType}))
+        let stepData = stepFields.map(({text}) => ({text}))
+        return await axios.post(url, {
+            recipeName: recipeName.value,
+            mealType: mealType.value,
+            ingredients: JSON.stringify(ingredientsData),
+            steps: JSON.stringify(stepData)
             })
             .then(function (response) {
                 
